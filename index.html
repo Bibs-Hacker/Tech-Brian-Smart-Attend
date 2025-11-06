@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeonClass Pro</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#00ffea" />
+    <link rel="icon" href="https://files.catbox.moe/1xcpmm.jpg" />
+    <link rel="apple-touch-icon" href="https://files.catbox.moe/1xcpmm.jpg" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&family=Roboto:wght@300;500&display=swap');
+
+        :root {
+            --neon: #00ffea;
+            --bg-dark: #0b0c1a;
+            --bg-card: #12132a;
+            --text: #e0e0ff;
+            --accent: #ff00aa;
+        }
+        .light {
+            --neon: #00aaff;
+            --bg-dark: #f0f4ff;
+            --bg-card: #ffffff;
+            --text: #1a1a2e;
+            --accent: #ff2d95;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            overflow-x: hidden;
+            transition: all 0.5s ease;
+        }
+
+        /* SPLASH SCREEN */
+        #splash {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeOut 3s forwards;
+        }
+        #splash img {
+            width: 180px;
+            filter: drop-shadow(0 0 30px var(--neon));
+            animation: pulse 2s infinite;
+        }
+        #splash h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--neon), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-top: 20px;
+        }
+
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* MAIN APP */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            animation: fadeIn 1s forwards 3s;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+        }
+        header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #00ffea, #ff00aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,255,234,0.5);
+        }
+        .toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: var(--bg-card);
+            padding: 12px;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(0,255,234,0.4);
+            cursor: pointer;
+        }
+        .toggle span { font-size: 1.8rem; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(0,255,234,0.2);
+            border: 1px solid var(--neon);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid var(--neon);
+            background: transparent;
+            color: var(--text);
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid var(--neon);
+        }
+        th {
+            background: rgba(0,255,234,0.1);
+            font-family: 'Orbitron';
+        }
+        .present { color: #00ff00; }
+        .absent { color: #ff0066; }
+        .circle {
+            width: 28px;
+            height: 28px;
+            border: 3px solid var(--neon);
+            border-radius: 50%;
+            display: inline-block;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .circle.checked {
+            background: var(--neon);
+            box-shadow: 0 0 15px var(--neon);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.4s;
+            font-size: 1.1rem;
+        }
+        .send-lec { background: #25d366; box-shadow: 0 0 20px #25d366; }
+        .send-hod { background: #ff9500; box-shadow: 0 0 20px #ff9500; }
+        .btn:hover { transform: scale(1.1); }
+
+        .history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .week {
+            background: rgba(0,255,234,0.05);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 5px solid var(--neon);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            background: linear-gradient(transparent, var(--bg-dark));
+        }
+        .tag {
+            color: var(--neon);
+            font-family: 'Orbitron';
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- SPLASH -->
+    <div id="splash">
+        <img src="https://files.catbox.moe/1xcpmm.jpg" alt="NeonClass Pro">
+        <h1>NeonClass Pro</h1>
+    </div>
+
+    <!-- TOGGLE -->
+    <div class="toggle" onclick="document.body.classList.toggle('light')">
+        <span>☀️</span><span style="margin-left:10px;">🌙</span>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>CLASS ATTENDANCE DASHBOARD</h1>
+            <p>Overall Attendance: <span id="overall">0</span>%</p>
+        </header>
+
+        <div class="card">
+            <h2>Enter Lecturer Details</h2>
+            <input type="text" id="lecturer" placeholder="Name of Lecturer" />
+            <input type="text" id="subject" placeholder="Subject Being Taught" />
+        </div>
+
+        <div class="card">
+            <h2>Mark Attendance - Week <span id="weekNum">1</span></h2>
+            <table id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>Student Names</th>
+                        <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Abraham Manyira</td>
+                        <td><div class="circle" data-day="Mon" data-student="0"></div></td>
+                        <td><div class="circle" data-day="Tue" data-student="0"></div></td>
+                        <td><div class="circle" data-day="Wed" data-student="0"></div></td>
+                        <td><div class="circle" data-day="Thu" data-student="0"></div></td>
+                        <td><div class="circle" data-day="Fri" data-student="0"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Brian Omenge</td>
+                        <td><div class="circle" data-day="Mon" data-student="1"></div></td>
+                        <td><div class="circle" data-day="Tue" data-student="1"></div></td>
+                        <td><div class="circle" data-day="Wed" data-student="1"></div></td>
+                        <td><div class="circle" data-day="Thu" data-student="1"></div></td>
+                        <td><div class="circle" data-day="Fri" data-student="1"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Salah Mohamud</td>
+                        <td><div class="circle" data-day="Mon" data-student="2"></div></td>
+                        <td><div class="circle" data-day="Tue" data-student="2"></div></td>
+                        <td><div class="circle" data-day="Wed" data-student="2"></div></td>
+                        <td><div class="circle" data-day="Thu" data-student="2"></div></td>
+                        <td><div class="circle" data-day="Fri" data-student="2"></div></td>
+                    </tr>
+                    <tr>
+                        <td>Nelson Mwerevu</td>
+                        <td><div class="circle" data-day="Mon" data-student="3"></div></td>
+                        <td><div class="circle" data-day="Tue" data-student="3"></div></td>
+                        <td><div class="circle" data-day="Wed" data-student="3"></div></td>
+                        <td><div class="circle" data-day="Thu" data-student="3"></div></td>
+                        <td><div class="circle" data-day="Fri" data-student="3"></div></td>
+                    </tr>
+                    <tr>
+                        <td>James Kembo</td>
+                        <td><div class="circle" data-day="Mon" data-student="4"></div></td>
+                        <td><div class="circle" data-day="Tue" data-student="4"></div></td>
+                        <td><div class="circle" data-day="Wed" data-student="4"></div></td>
+                        <td><div class="circle" data-day="Thu" data-student="4"></div></td>
+                        <td><div class="circle" data-day="Fri" data-student="4"></div></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="text-align:center; margin:30px 0;">
+                <button class="btn send-lec" onclick="sendToLecturer()">SEND TO LECTURER (WhatsApp)</button>
+                <button class="btn send-hod" onclick="sendToHOD()">WEEKLY REPORT → HOD</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>History (Auto-saved daily)</h2>
+            <div class="history" id="history"></div>
+        </div>
+
+        <footer>
+            <p>Powered by <span class="tag">Tech Brian</span> © 2025 | NeonClass Pro v2.0</p>
+        </footer>
+    </div>
+
+    <script>
+        const students = ["Abraham Manyira", "Brian Omenge", "Salah Mohamud", "Nelson Mwerevu", "James Kembo"];
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+        let attendance = {};
+
+        // Load from localStorage
+        if (localStorage.getItem("neonClassData")) {
+            attendance = JSON.parse(localStorage.getItem("neonClassData"));
+        } else {
+            // Init empty
+            attendance = { weeks: {} };
+            const today = new Date().toISOString().slice(0,10);
+            const weekNum = "Week" + Math.ceil(new Date().getDate() / 7);
+            attendance.currentWeek = weekNum;
+            attendance.weeks[weekNum] = {};
+            days.forEach(d => attendance.weeks[weekNum][d] = Array(5).fill(false));
+        }
+
+        // Update week number
+        document.getElementById("weekNum").innerText = attendance.currentWeek || "1";
+
+        // Render circles
+        document.querySelectorAll(".circle").forEach(circle => {
+            const day = circle.dataset.day;
+            const stu = circle.dataset.student;
+            const week = attendance.currentWeek || "Week1";
+            if (attendance.weeks[week][day][stu] === true) {
+                circle.classList.add("checked");
+            }
+            circle.onclick = () => {
+                circle.classList.toggle("checked");
+                const val = circle.classList.contains("checked");
+                if (!attendance.weeks[week]) attendance.weeks[week] = {};
+                if (!attendance.weeks[week][day]) attendance.weeks[week][day] = Array(5).fill(false);
+                attendance.weeks[week][day][stu] = val;
+                saveAndUpdate();
+            };
+        });
+
+        function saveAndUpdate() {
+            localStorage.setItem("neonClassData", JSON.stringify(attendance));
+            updateOverall();
+            updateHistory();
+        }
+
+        function updateOverall() {
+            let total = 0, present = 0;
+            Object.keys(attendance.weeks).forEach(w => {
+                days.forEach(d => {
+                    if (attendance.weeks[w][d]) {
+                        total += 5;
+                        present += attendance.weeks[w][d].filter(Boolean).length;
+                    }
+                });
+            });
+            const perc = total ? Math.round((present / total) * 100) : 0;
+            document.getElementById("overall").innerText = perc;
+        }
+
+        function updateHistory() {
+            const hist = document.getElementById("history");
+            hist.innerHTML = "";
+            Object.keys(attendance.weeks).reverse().forEach(week => {
+                const div = document.createElement("div");
+                div.className = "week";
+                div.innerHTML = `<strong>${week}</strong><br>`;
+                days.forEach(day => {
+                    const cnt = attendance.weeks[week][day] ? attendance.weeks[week][day].filter(Boolean).length : 0;
+                    div.innerHTML += `${day}: ${cnt}/5 ✔️<br>`;
+                });
+                hist.appendChild(div);
+            });
+        }
+
+        function sendToLecturer() {
+            const lec = document.getElementById("lecturer").value || "Sir/Madam";
+            const sub = document.getElementById("subject").value || "Class";
+            const today = new Date().toLocaleDateString('en-GB');
+            let msg = `*CLASS ATTENDANCE*%0A`;
+            msg += `Lecturer: ${lec}%0ASubject: ${sub}%0ADate: ${today}%0A%0A`;
+            students.forEach((s,i) => {
+                const present = attendance.weeks[attendance.currentWeek][new Date().toLocaleString('en-us',{weekday:'short'})][i] ? "Present" : "Absent";
+                msg += `${s} - ${present}%0A`;
+            });
+            const phone = prompt("Lecturer WhatsApp number (e.g. 2547xxxxxxxx)", "");
+            if (phone) window.open(`https://wa.me/${phone}?text=${msg}`);
+        }
+
+        function sendToHOD() {
+            let msg = `*WEEKLY ATTENDANCE REPORT*%0AClass: NeonClass Pro%0AWeek: ${attendance.currentWeek}%0A%0A`;
+            students.forEach((s,i) => {
+                let att = 0, total = 0;
+                days.forEach(d => {
+                    if (attendance.weeks[attendance.currentWeek][d]) {
+                        total++;
+                        if (attendance.weeks[attendance.currentWeek][d][i]) att++;
+                    }
+                });
+                const perc = total ? Math.round((att/total)*100) : 0;
+                msg += `${s} → ${perc}%25%0A`;
+            });
+            const phone = prompt("HOD WhatsApp number (e.g. 2547xxxxxxxx)", "");
+            if (phone) window.open(`https://wa.me/${phone}?text=${msg}`);
+        }
+
+        // Auto-save daily
+        setInterval(() => {
+            const today = new Date().toLocaleString('en-us',{weekday:'short'});
+            const week = "Week" + Math.ceil(new Date().getDate() / 7);
+            if (attendance.currentWeek !== week) {
+                attendance.currentWeek = week;
+                attendance.weeks[week] = {};
+                days.forEach(d => attendance.weeks[week][d] = Array(5).fill(false));
+                saveAndUpdate();
+                location.reload();
+            }
+        }, 60000);
+
+        // Init
+        updateOverall();
+        updateHistory();
+
+        // PWA install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            setTimeout(() => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                }
+            }, 3000);
+        });
+    </script>
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
+        }
+    </script>
+</body>
+</html>
